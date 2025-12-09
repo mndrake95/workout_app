@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.database import get_db
 from app.models import Workout
-from app.schemas import WorkoutCreate, WorkoutRead
+from app.schemas import WorkoutCreate, WorkoutRead, WorkoutReadWithSets
 
 router = APIRouter()
 
@@ -18,10 +19,10 @@ async def create_workout(
     await db.refresh(new_workout)
     return new_workout
 
-@router.get("/", response_model=list[WorkoutRead])
+@router.get("/", response_model=list[WorkoutReadWithSets])
 async def read_workout(
     db: AsyncSession = Depends(get_db)
 ):
-    query = select(Workout)
+    query = select(Workout).options(selectinload(Workout.sets))
     result = await db.execute(query)
     return result.scalars().all()

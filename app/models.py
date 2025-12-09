@@ -1,6 +1,6 @@
 import uuid
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Integer, Float, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy import func
 import datetime
@@ -20,6 +20,7 @@ class Workout(Base):
     owner_id: Mapped[int] = mapped_column(Integer)
     name: Mapped[str|None] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
+    sets = relationship("WorkoutSets", back_populates="workout", cascade="all, delete-orphan")
 
 class WorkoutSets(Base):
     __tablename__ = "workout_sets"
@@ -31,3 +32,4 @@ class WorkoutSets(Base):
     set_order: Mapped[int] = mapped_column(Integer, nullable=False)
     distance: Mapped[float|None] = mapped_column(Float, nullable=True)
     duration: Mapped[float|None] = mapped_column(Float, nullable=True)
+    workout = relationship("Workout", back_populates="sets")

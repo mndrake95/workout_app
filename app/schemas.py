@@ -42,3 +42,6 @@ class WorkoutSetRead(WorkoutSetBase):
     workout_id: uuid.UUID
     exercise_id: uuid.UUID
     model_config = ConfigDict(from_attributes=True)
+
+class WorkoutReadWithSets(WorkoutRead):
+    sets: list[WorkoutSetRead]
